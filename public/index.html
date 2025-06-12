@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Hello World</title>
+<title>My Webpage</title>
+<style>
+.slideshow {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 600px;
+}
+.slideshow img {
+width: 800px;
+height: 600px;
+}
+</style>
 </head>
 <body>
-  <h1>Hello, World1111</h1>
+<div class="slideshow">
+<button id="previousBtn">Previous</button>
+<img id='image' src="outputImg\dummy.png" >
+<button id="nextBtn">Next</button>
+</div>
+<script>
+//const path = 'D:\test\public';
+//const data = require('')
+const images = ['outputImg/1.png','outputImg/2.png', 'outputImg/3.png','outputImg/4.png', 'outputImg/5.png','outputImg/6.png','outputImg/7.png'];
+let currentIndex = 0;
+const previousBtn = document.getElementById('previousBtn');
+const nextBtn = document.getElementById('nextBtn');
+const image = document.getElementById('image');
+previousBtn.addEventListener('click', () => {
+currentIndex = (currentIndex - 1 + images.length) % images.length;
+image.src = images[currentIndex];
+});
+nextBtn.addEventListener('click', () => {
+currentIndex = (currentIndex + 1) % images.length;
+image.src = images[currentIndex];
+});
+document.getElementById("demo").innerHTML = 5 + 6;
+</script>
 </body>
 </html>
