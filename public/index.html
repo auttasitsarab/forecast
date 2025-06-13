@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zoomable Slideshow with Centered Watermark</title>
   <style>
     body {
@@ -14,13 +15,17 @@
     .slideshow-container {
       width: 100vw;
       height: 100vh;
-      overflow: scroll;
+      overflow: hidden;
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .zoom-wrapper {
       position: relative;
       display: inline-block;
+      overflow: hidden;
     }
 
     #image {
@@ -35,13 +40,13 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #000; /* สีดำเข้ม */
+      color: rgba(0, 0, 0, 0.8); /* สีดำเข้ม */
       font-size: 32px;
       font-weight: bold;
       pointer-events: none;
       z-index: 5;
-      opacity: 0.6;
-      text-shadow: 1px 1px 3px #fff; /* เงาเล็กน้อยให้เด่นขึ้น */
+      opacity: 0.8;
+      text-shadow: 1px 1px 3px #fff;
     }
 
     .nav-button {
@@ -71,7 +76,7 @@
 
     <div class="zoom-wrapper" id="zoomWrapper">
       <img id="image" src="outputImg/2025061305000.jpg" />
-      <div id="caption" class="caption-watermark">0.jpg</div>
+      <div id="caption" class="caption-watermark">2025061305000.jpg</div>
     </div>
 
     <button class="nav-button" id="nextBtn">Next</button>
