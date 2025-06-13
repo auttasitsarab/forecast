@@ -1,80 +1,116 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <title>My Webpage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zoomable Slideshow</title>
   <style>
-    .slideshow {
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    .slideshow-container {
+      width: 100vw;
+      height: 100vh;
+      overflow: scroll;
       position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 500px;
+      background-color: #000;
     }
-
-    .slideshow img {
-      width: 556px;
-      height: 500px;
-      object-fit: cover;
+    .zoom-wrapper {
+      position: relative;
+      display: inline-block;
     }
-
+    .zoom-wrapper img {
+      width: 800px;
+      height: 600px;
+      display: block;
+    }
     .nav-button {
-      position: absolute;
+      position: fixed;
       top: 50%;
       transform: translateY(-50%);
-      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.5);
       color: white;
       border: none;
-      font-size: 2em;
       padding: 10px;
       cursor: pointer;
-      z-index: 10;
-      transition: background-color 0.3s;
     }
-
-    .nav-button:hover {
-      background-color: rgba(0, 0, 0, 0.6);
-    }
-
     #previousBtn {
       left: 10px;
     }
-
     #nextBtn {
       right: 10px;
     }
   </style>
 </head>
 <body>
-
-  <div class="slideshow">
-    <button id="previousBtn" class="nav-button">&#9664;</button> <!-- Left Arrow -->
-    <img id="image" src="outputImg/2025061304000.jpg">
-    <button id="nextBtn" class="nav-button">&#9654;</button> <!-- Right Arrow -->
+  <div class="slideshow-container" id="slideshowContainer">
+    <button class="nav-button" id="previousBtn">Previous</button>
+    <div class="zoom-wrapper" id="zoomWrapper">
+      <img id="image" src="outputImg/2025061305000.jpg" />
+    </div>
+    <button class="nav-button" id="nextBtn">Next</button>
   </div>
 
   <script>
-    const images = [
-      'outputImg/2025061304000.jpg',
-      'outputImg/2025061304001.jpg',
-      'outputImg/2025061304002.jpg',
-      'outputImg/2025061304003.jpg',
-      'outputImg/2025061304004.jpg'
-    ];
-
+    const images = ['outputImg/2025061305000.jpg', 'outputImg/2025061305001.jpg', 'outputImg/2025061305002.jpg', 'outputImg/2025061305003.jpg', 'outputImg/2025061305004.jpg'];
     let currentIndex = 0;
-    const previousBtn = document.getElementById('previousBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const image = document.getElementById('image');
+    let scale = 1;
 
-    previousBtn.addEventListener('click', () => {
+    const image = document.getElementById('image');
+    const zoomWrapper = document.getElementById('zoomWrapper');
+
+    document.getElementById('previousBtn').addEventListener('click', () => {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
       image.src = images[currentIndex];
+      resetZoom();
     });
 
-    nextBtn.addEventListener('click', () => {
+    document.getElementById('nextBtn').addEventListener('click', () => {
       currentIndex = (currentIndex + 1) % images.length;
       image.src = images[currentIndex];
+      resetZoom();
     });
-  </script>
 
+    // ฟังก์ชัน pinch zoom แบบขยายขนาดจริง
+    let startDistance = 0;
+
+    const getDistance = (touches) => {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    image.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        startDistance = getDistance(e.touches);
+      }
+    });
+
+    image.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const newDistance = getDistance(e.touches);
+        const factor = newDistance / startDistance;
+        const newScale = scale * factor;
+
+        // ขยายภาพจริง
+        image.style.width = `${800 * newScale}px`;
+        image.style.height = `${600 * newScale}px`;
+      }
+    });
+
+    image.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        scale = parseFloat(image.style.width) / 800 || 1;
+      }
+    });
+
+    function resetZoom() {
+      scale = 1;
+      image.style.width = '800px';
+      image.style.height = '600px';
+    }
+  </script>
 </body>
 </html>
