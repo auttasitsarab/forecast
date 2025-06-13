@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Webpage</title>
+  <title>Zoomable Slideshow</title>
   <style>
     body {
       margin: 0;
@@ -13,21 +13,19 @@
       height: 100vh;
       overflow: scroll;
       position: relative;
-      touch-action: none;
+      background-color: #000;
     }
     .zoom-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-origin: center center;
+      position: relative;
+      display: inline-block;
     }
     .zoom-wrapper img {
-      max-width: none;
       width: 800px;
       height: 600px;
+      display: block;
     }
     .nav-button {
-      position: absolute;
+      position: fixed;
       top: 50%;
       transform: translateY(-50%);
       z-index: 10;
@@ -57,26 +55,25 @@
   <script>
     const images = ['outputImg/2025061304300.jpg', 'outputImg/2025061304301.jpg', 'outputImg/2025061304302.jpg', 'outputImg/2025061304303.jpg', 'outputImg/2025061304304.jpg'];
     let currentIndex = 0;
+    let scale = 1;
 
     const image = document.getElementById('image');
-    const previousBtn = document.getElementById('previousBtn');
-    const nextBtn = document.getElementById('nextBtn');
+    const zoomWrapper = document.getElementById('zoomWrapper');
 
-    previousBtn.addEventListener('click', () => {
+    document.getElementById('previousBtn').addEventListener('click', () => {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
       image.src = images[currentIndex];
+      resetZoom();
     });
 
-    nextBtn.addEventListener('click', () => {
+    document.getElementById('nextBtn').addEventListener('click', () => {
       currentIndex = (currentIndex + 1) % images.length;
       image.src = images[currentIndex];
+      resetZoom();
     });
 
-    // Pinch-to-zoom support (basic for mobile)
-    let scale = 1;
+    // ฟังก์ชัน pinch zoom แบบขยายขนาดจริง
     let startDistance = 0;
-
-    const zoomWrapper = document.getElementById('zoomWrapper');
 
     const getDistance = (touches) => {
       const dx = touches[0].clientX - touches[1].clientX;
@@ -84,26 +81,27 @@
       return Math.sqrt(dx * dx + dy * dy);
     };
 
-    zoomWrapper.addEventListener('touchstart', (e) => {
+    image.addEventListener('touchstart', (e) => {
       if (e.touches.length === 2) {
         startDistance = getDistance(e.touches);
       }
     });
 
-    zoomWrapper.addEventListener('touchmove', (e) => {
+    image.addEventListener('touchmove', (e) => {
       if (e.touches.length === 2) {
         e.preventDefault();
         const newDistance = getDistance(e.touches);
-        const newScale = scale * (newDistance / startDistance);
-        zoomWrapper.style.transform = `scale(${newScale})`;
+        const factor = newDistance / startDistance;
+        const newScale = scale * factor;
+
+        // ขยายภาพจริง
+        image.style.width = `${800 * newScale}px`;
+        image.style.height = `${600 * newScale}px`;
       }
     });
 
-    zoomWrapper.addEventListener('touchend', (e) => {
+    image.addEventListener('touchend', (e) => {
       if (e.touches.length < 2) {
-        scale = parseFloat(zoomWrapper.style.transform.replace(/[^0-9.]/g, '')) || 1;
+        scale = parseFloat(image.style.width) / 800 || 1;
       }
     });
-  </script>
-</body>
-</html>
