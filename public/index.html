@@ -2,29 +2,48 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zoomable Slideshow</title>
+  <title>Zoomable Slideshow with Centered Watermark</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
+      background-color: #000;
+      font-family: sans-serif;
     }
+
     .slideshow-container {
       width: 100vw;
       height: 100vh;
       overflow: scroll;
       position: relative;
-      background-color: #000;
     }
+
     .zoom-wrapper {
       position: relative;
       display: inline-block;
     }
-    .zoom-wrapper img {
+
+    #image {
       display: block;
       width: 800px;
       height: 600px;
       transition: width 0.2s, height 0.2s;
     }
+
+    .caption-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #000; /* สีดำเข้ม */
+      font-size: 32px;
+      font-weight: bold;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.6;
+      text-shadow: 1px 1px 3px #fff; /* เงาเล็กน้อยให้เด่นขึ้น */
+    }
+
     .nav-button {
       position: fixed;
       top: 50%;
@@ -36,9 +55,11 @@
       padding: 10px;
       cursor: pointer;
     }
+
     #previousBtn {
       left: 10px;
     }
+
     #nextBtn {
       right: 10px;
     }
@@ -47,9 +68,12 @@
 <body>
   <div class="slideshow-container" id="slideshowContainer">
     <button class="nav-button" id="previousBtn">Previous</button>
+
     <div class="zoom-wrapper" id="zoomWrapper">
       <img id="image" src="outputImg/2025061305000.jpg" />
+      <div id="caption" class="caption-watermark">0.jpg</div>
     </div>
+
     <button class="nav-button" id="nextBtn">Next</button>
   </div>
 
@@ -59,13 +83,24 @@
     let scale = 1;
 
     const image = document.getElementById('image');
+    const caption = document.getElementById('caption');
 
-    // เปลี่ยนภาพ โดยยังรักษาขนาดตาม scale ปัจจุบัน
+    function getFilename(path) {
+      return path.split('/').pop();
+    }
+
     function updateImage() {
+      const filename = getFilename(images[currentIndex]);
       image.src = images[currentIndex];
+      caption.textContent = filename;
+
       image.onload = () => {
-        image.style.width = `${800 * scale}px`;
-        image.style.height = `${600 * scale}px`;
+        const newWidth = 800 * scale;
+        const newHeight = 600 * scale;
+        image.style.width = `${newWidth}px`;
+        image.style.height = `${newHeight}px`;
+
+        caption.style.fontSize = `${32 * scale}px`;
       };
     }
 
@@ -79,7 +114,7 @@
       updateImage();
     });
 
-    // Zoom ด้วย pinch
+    // Zoom
     let startDistance = 0;
 
     const getDistance = (touches) => {
@@ -100,12 +135,12 @@
         const newDistance = getDistance(e.touches);
         const factor = newDistance / startDistance;
         const newScale = scale * factor;
-
-        // จำกัดการซูมระหว่าง 1x - 5x
         const clampedScale = Math.min(Math.max(newScale, 1), 5);
 
-        image.style.width = `${800 * clampedScale}px`;
-        image.style.height = `${600 * clampedScale}px`;
+        scale = clampedScale;
+        image.style.width = `${800 * scale}px`;
+        image.style.height = `${600 * scale}px`;
+        caption.style.fontSize = `${32 * scale}px`;
       }
     });
 
@@ -115,11 +150,7 @@
       }
     });
 
-    // กำหนด scale เริ่มต้น
-    image.onload = () => {
-      image.style.width = `${800 * scale}px`;
-      image.style.height = `${600 * scale}px`;
-    };
+    updateImage(); // เริ่มต้น
   </script>
 </body>
 </html>
