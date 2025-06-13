@@ -27,12 +27,12 @@
     }
 
     .image-wrapper {
+      position: relative;
       width: 100%;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
       transform-origin: center center;
       transition: transform 0.2s ease;
     }
@@ -97,9 +97,10 @@
 
 <script>
   const images = [
+    'outputImg/2025061307300.jpg',
     'outputImg/2025061307301.jpg',
     'outputImg/2025061307302.jpg',
-    'outputImg/2025061307303.jpg',
+
   ];
 
   let currentIndex = 0;
@@ -169,7 +170,26 @@
   });
 
   function applyTransform() {
+    // ปรับตำแหน่งของภาพ โดยใช้ค่าซูมและเลื่อน
     imageWrapper.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
+
+    // ปรับตำแหน่งปุ่มและลายน้ำ
+    const watermarkWidth = watermark.offsetWidth;
+    const watermarkHeight = watermark.offsetHeight;
+    const imageWrapperWidth = imageWrapper.offsetWidth;
+    const imageWrapperHeight = imageWrapper.offsetHeight;
+
+    const maxTranslateX = Math.max(0, imageWrapperWidth * scale - imageWrapperWidth);
+    const maxTranslateY = Math.max(0, imageWrapperHeight * scale - imageWrapperHeight);
+
+    // ตำแหน่งลายน้ำ
+    watermark.style.left = `${Math.min(imageWrapperWidth / 2 - watermarkWidth / 2, maxTranslateX)}px`;
+
+    // ปรับปุ่มให้ยึดตามภาพ
+    const prevButton = document.querySelector('.prev-button');
+    const nextButton = document.querySelector('.next-button');
+    prevButton.style.top = `${imageWrapperHeight / 2 - prevButton.offsetHeight / 2}px`;
+    nextButton.style.top = `${imageWrapperHeight / 2 - nextButton.offsetHeight / 2}px`;
   }
 
   function resetZoom() {
@@ -185,5 +205,3 @@
 
 </body>
 </html>
-
- 
