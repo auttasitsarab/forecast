@@ -32,6 +32,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
       transform-origin: center center;
       transition: transform 0.2s ease;
     }
@@ -46,7 +47,7 @@
     }
 
     .nav-button {
-      position: fixed;
+      position: absolute;
       top: 50%;
       transform: translateY(-50%);
       background-color: rgba(255, 255, 255, 0.6);
@@ -66,7 +67,7 @@
     }
 
     .watermark {
-      position: fixed;
+      position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
@@ -84,12 +85,14 @@
 <div class="viewer-container" id="viewer">
   <div class="image-wrapper" id="imageWrapper">
     <img id="mainImage" src="" alt="image" />
+    
+    <!-- ปุ่มเปลี่ยนภาพ -->
+    <button class="nav-button prev-button" onclick="showPrev()">‹</button>
+    <button class="nav-button next-button" onclick="showNext()">›</button>
+
+    <!-- ลายน้ำชื่อภาพ -->
+    <div class="watermark" id="watermark"></div>
   </div>
-
-  <button class="nav-button prev-button" onclick="showPrev()">‹</button>
-  <button class="nav-button next-button" onclick="showNext()">›</button>
-
-  <div class="watermark" id="watermark"></div>
 </div>
 
 <script>
@@ -182,3 +185,5 @@
 
 </body>
 </html>
+
+ 
