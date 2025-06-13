@@ -1,125 +1,109 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zoomable Slideshow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Webpage</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      background: #000;
-    }
-
-    .zoom-container {
       overflow: hidden;
-      touch-action: none;
-      width: 100%;
+    }
+    .slideshow-container {
+      width: 100vw;
       height: 100vh;
+      overflow: scroll;
       position: relative;
+      touch-action: none;
     }
-
-    .slideshow {
+    .zoom-wrapper {
       display: flex;
-      align-items: center;
       justify-content: center;
-      position: relative;
+      align-items: center;
       transform-origin: center center;
-      transition: transform 0.2s;
     }
-
-    .slideshow img {
-      width: 100%;
-      max-width: 600px;
-      height: auto;
-      display: block;
+    .zoom-wrapper img {
+      max-width: none;
+      width: 800px;
+      height: 600px;
     }
-
     .nav-button {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background-color: rgba(255, 255, 255, 0.3);
-      color: black;
-      border: none;
-      font-size: 2em;
-      padding: 0.5em;
-      cursor: pointer;
       z-index: 10;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
     }
-
     #previousBtn {
       left: 10px;
     }
-
     #nextBtn {
       right: 10px;
     }
   </style>
 </head>
 <body>
-
-<div class="zoom-container" id="zoomArea">
-  <div class="slideshow" id="slideshow">
-    <button id="previousBtn" class="nav-button">&#9664;</button>
-    <img id="image" src="outputImg/2025061304300.jpg">
-    <button id="nextBtn" class="nav-button">&#9654;</button>
+  <div class="slideshow-container" id="slideshowContainer">
+    <button class="nav-button" id="previousBtn">Previous</button>
+    <div class="zoom-wrapper" id="zoomWrapper">
+      <img id="image" src="outputImg/2025061304300.jpg" />
+    </div>
+    <button class="nav-button" id="nextBtn">Next</button>
   </div>
-</div>
 
-<script>
-  const images = [
-    'outputImg/2025061304300.jpg',
-    'outputImg/2025061304301.jpg',
-    'outputImg/2025061304302.jpg',
-    'outputImg/2025061304303.jpg',
-    'outputImg/2025061304304.jpg'
-  ];
-  let currentIndex = 0;
-  const image = document.getElementById('image');
+  <script>
+    const images = ['outputImg/2025061304300.jpg', 'outputImg/2025061304301.jpg', 'outputImg/2025061304302.jpg', 'outputImg/2025061304303.jpg', 'outputImg/2025061304304.jpg'];
+    let currentIndex = 0;
 
-  document.getElementById('nextBtn').addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % images.length;
-    image.src = images[currentIndex];
-  });
+    const image = document.getElementById('image');
+    const previousBtn = document.getElementById('previousBtn');
+    const nextBtn = document.getElementById('nextBtn');
 
-  document.getElementById('previousBtn').addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    image.src = images[currentIndex];
-  });
+    previousBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      image.src = images[currentIndex];
+    });
 
-  // Simple pinch-to-zoom support
-  const zoomArea = document.getElementById("zoomArea");
-  const slideshow = document.getElementById("slideshow");
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      image.src = images[currentIndex];
+    });
 
-  let scale = 1;
-  let startDist = 0;
+    // Pinch-to-zoom support (basic for mobile)
+    let scale = 1;
+    let startDistance = 0;
 
-  zoomArea.addEventListener("touchstart", (e) => {
-    if (e.touches.length === 2) {
-      startDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-    }
-  });
+    const zoomWrapper = document.getElementById('zoomWrapper');
 
-  zoomArea.addEventListener("touchmove", (e) => {
-    if (e.touches.length === 2) {
-      const newDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const zoomFactor = newDist / startDist;
-      scale = Math.min(Math.max(zoomFactor, 1), 3); // Limit zoom
-      slideshow.style.transform = `scale(${scale})`;
-    }
-  });
+    const getDistance = (touches) => {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
 
-  zoomArea.addEventListener("touchend", () => {
-    // Keep scale value
-  });
-</script>
+    zoomWrapper.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        startDistance = getDistance(e.touches);
+      }
+    });
 
+    zoomWrapper.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const newDistance = getDistance(e.touches);
+        const newScale = scale * (newDistance / startDistance);
+        zoomWrapper.style.transform = `scale(${newScale})`;
+      }
+    });
+
+    zoomWrapper.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        scale = parseFloat(zoomWrapper.style.transform.replace(/[^0-9.]/g, '')) || 1;
+      }
+    });
+  </script>
 </body>
 </html>
