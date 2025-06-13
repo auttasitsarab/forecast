@@ -1,40 +1,164 @@
-<html>
+<!DOCTYPE html>
+<html lang="th">
 <head>
-<title>My Webpage</title>
-<style>
-.slideshow {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 500px;
-}
-.slideshow img {
-width: 556px;
-height: 500px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .gallery-container {
+            position: relative;
+            max-width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.25s ease;
+        }
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .prev {
+            left: 10px;
+        }
+        .next {
+            right: 10px;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .zoomable {
+            touch-action: none; /* ป้องกันการ zoom อัตโนมัติของเบราว์เซอร์ */
+            cursor: grab;
+        }
+    </style>
 </head>
 <body>
-<div class="slideshow">
-<button id="previousBtn">Previous</button>
-<img id='image' src="outputImg\2025061308000.jpg" >
-<button id="nextBtn">Next</button>
+
+<div class="gallery-container">
+    <div class="image-container">
+        <div class="image-wrapper">
+            <img id="current-image" src='outputImg/2025061308000.jpg' alt="Image 1">
+            <div class="watermark" id="watermark">image1</div>
+        </div>
+    </div>
+    <button class="prev" onclick="prevImage()">&#10094;</button>
+    <button class="next" onclick="nextImage()">&#10095;</button>
 </div>
+
 <script>
-const images = ['outputImg/2025061308000.jpg','outputImg/2025061308001.jpg', 'outputImg/2025061308002.jpg','outputImg/2025061308003.jpg', 'outputImg/2025061308004.jpg'];
-let currentIndex = 0;
-const previousBtn = document.getElementById('previousBtn');
-const nextBtn = document.getElementById('nextBtn');
-const image = document.getElementById('image');
-previousBtn.addEventListener('click', () => {
-currentIndex = (currentIndex - 1 + images.length) % images.length;
-image.src = images[currentIndex];
-});
-nextBtn.addEventListener('click', () => {
-currentIndex = (currentIndex + 1) % images.length;
-image.src = images[currentIndex];
-});
-document.getElementById("demo").innerHTML = 5 + 6;
+    let imageList = [
+        {src: 'outputImg/2025061308000.jpg'},
+        {src: 'outputImg/2025061308001.jpg'},
+        {src: 'outputImg/2025061308002.jpg'}
+    ];
+
+    let currentIndex = 0;
+
+    const imageElement = document.getElementById('current-image');
+    const watermark = document.getElementById('watermark');
+
+    // ฟังก์ชันเพื่อดึงชื่อจากไฟล์ (โดยไม่รวมส่วนขยาย)
+    function getFileNameWithoutExtension(filePath) {
+        return filePath.split('/').pop().split('.')[0];
+    }
+
+    function loadImage(index) {
+        const image = imageList[index];
+        imageElement.src = image.src;
+        
+        // ตั้งค่าลายน้ำเป็นชื่อไฟล์ที่ไม่มีนามสกุล
+        watermark.textContent = getFileNameWithoutExtension(image.src);
+        currentIndex = index;
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+        loadImage(currentIndex);
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % imageList.length;
+        loadImage(currentIndex);
+    }
+
+    let isDragging = false;
+    let initialX, initialY;
+
+    imageElement.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        initialX = e.clientX;
+        initialY = e.clientY;
+        imageElement.style.cursor = 'grabbing';
+    });
+
+    imageElement.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - initialX;
+        const deltaY = e.clientY - initialY;
+        const rect = imageElement.getBoundingClientRect();
+        imageElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    });
+
+    imageElement.addEventListener('mouseup', () => {
+        isDragging = false;
+        imageElement.style.cursor = 'grab';
+    });
+
+    imageElement.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const scale = Math.min(Math.max(1, imageElement.style.transform.match(/scale\(([^)]+)\)/)?.[1] || 1), 3);
+        const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+        const newScale = scale * zoomFactor;
+        imageElement.style.transform = `scale(${newScale})`;
+    });
+
+    loadImage(currentIndex);
 </script>
+
 </body>
 </html>
+
