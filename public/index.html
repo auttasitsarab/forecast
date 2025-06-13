@@ -1,207 +1,40 @@
-<!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Image Viewer</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: black;
-    }
-
-    .viewer-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    .image-wrapper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-origin: center center;
-      transition: transform 0.2s ease;
-    }
-
-    .image-wrapper img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      touch-action: none;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    .nav-button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(255, 255, 255, 0.6);
-      border: none;
-      font-size: 24px;
-      padding: 10px 20px;
-      z-index: 10;
-      cursor: pointer;
-    }
-
-    .prev-button {
-      left: 10px;
-    }
-
-    .next-button {
-      right: 10px;
-    }
-
-    .watermark {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 5px 10px;
-      font-size: 18px;
-      z-index: 10;
-      pointer-events: none;
-    }
-  </style>
+<title>My Webpage</title>
+<style>
+.slideshow {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 500px;
+}
+.slideshow img {
+width: 556px;
+height: 500px;
+}
+</style>
 </head>
 <body>
-
-<div class="viewer-container" id="viewer">
-  <div class="image-wrapper" id="imageWrapper">
-    <img id="mainImage" src="" alt="image" />
-    
-    <!-- ปุ่มเปลี่ยนภาพ -->
-    <button class="nav-button prev-button" onclick="showPrev()">‹</button>
-    <button class="nav-button next-button" onclick="showNext()">›</button>
-
-    <!-- ลายน้ำชื่อภาพ -->
-    <div class="watermark" id="watermark"></div>
-  </div>
+<div class="slideshow">
+<button id="previousBtn">Previous</button>
+<img id='image' src="outputImg\2025061308000.jpg" >
+<button id="nextBtn">Next</button>
 </div>
-
 <script>
-  const images = [
-    'outputImg/2025061307300.jpg',
-    'outputImg/2025061307301.jpg',
-    'outputImg/2025061307302.jpg',
-
-  ];
-
-  let currentIndex = 0;
-  let scale = 1;
-  let translateX = 0, translateY = 0;
-  let lastScale = 1;
-  let startX = 0, startY = 0;
-
-  const imgElement = document.getElementById('mainImage');
-  const watermark = document.getElementById('watermark');
-  const imageWrapper = document.getElementById('imageWrapper');
-  const viewer = document.getElementById('viewer');
-
-  function updateImage() {
-    const imagePath = images[currentIndex];
-    imgElement.src = imagePath;
-    const fileName = imagePath.split('/').pop().split('.').slice(0, -1).join('.');
-    watermark.textContent = fileName;
-    applyTransform();
-  }
-
-  function showPrev() {
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    updateImage();
-  }
-
-  function showNext() {
-    currentIndex = (currentIndex + 1) % images.length;
-    updateImage();
-  }
-
-  // Zoom & Pan (touch and pinch)
-  viewer.addEventListener('touchstart', function(e) {
-    if (e.touches.length === 2) {
-      lastScale = scale;
-    } else if (e.touches.length === 1) {
-      startX = e.touches[0].clientX - translateX;
-      startY = e.touches[0].clientY - translateY;
-    }
-  });
-
-  viewer.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (!viewer.initialDistance) {
-        viewer.initialDistance = distance;
-      } else {
-        const scaleFactor = distance / viewer.initialDistance;
-        scale = Math.min(5, Math.max(1, lastScale * scaleFactor));
-        applyTransform();
-      }
-    } else if (e.touches.length === 1 && scale > 1) {
-      translateX = e.touches[0].clientX - startX;
-      translateY = e.touches[0].clientY - startY;
-      applyTransform();
-    }
-  });
-
-  viewer.addEventListener('touchend', function(e) {
-    if (e.touches.length < 2) {
-      viewer.initialDistance = null;
-    }
-  });
-
-  function applyTransform() {
-    // ปรับตำแหน่งของภาพ โดยใช้ค่าซูมและเลื่อน
-    imageWrapper.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
-
-    // ปรับตำแหน่งปุ่มและลายน้ำ
-    const watermarkWidth = watermark.offsetWidth;
-    const watermarkHeight = watermark.offsetHeight;
-    const imageWrapperWidth = imageWrapper.offsetWidth;
-    const imageWrapperHeight = imageWrapper.offsetHeight;
-
-    const maxTranslateX = Math.max(0, imageWrapperWidth * scale - imageWrapperWidth);
-    const maxTranslateY = Math.max(0, imageWrapperHeight * scale - imageWrapperHeight);
-
-    // ตำแหน่งลายน้ำ
-    watermark.style.left = `${Math.min(imageWrapperWidth / 2 - watermarkWidth / 2, maxTranslateX)}px`;
-
-    // ปรับปุ่มให้ยึดตามภาพ
-    const prevButton = document.querySelector('.prev-button');
-    const nextButton = document.querySelector('.next-button');
-    prevButton.style.top = `${imageWrapperHeight / 2 - prevButton.offsetHeight / 2}px`;
-    nextButton.style.top = `${imageWrapperHeight / 2 - nextButton.offsetHeight / 2}px`;
-  }
-
-  function resetZoom() {
-    scale = 1;
-    translateX = 0;
-    translateY = 0;
-    applyTransform();
-  }
-
-  // เริ่มโหลดภาพแรก
-  updateImage();
+const images = ['outputImg/2025061308000.jpg','outputImg/2025061308001.jpg', 'outputImg/2025061308002.jpg','outputImg/2025061308003.jpg', 'outputImg/2025061308004.jpg'];
+let currentIndex = 0;
+const previousBtn = document.getElementById('previousBtn');
+const nextBtn = document.getElementById('nextBtn');
+const image = document.getElementById('image');
+previousBtn.addEventListener('click', () => {
+currentIndex = (currentIndex - 1 + images.length) % images.length;
+image.src = images[currentIndex];
+});
+nextBtn.addEventListener('click', () => {
+currentIndex = (currentIndex + 1) % images.length;
+image.src = images[currentIndex];
+});
+document.getElementById("demo").innerHTML = 5 + 6;
 </script>
-
 </body>
 </html>
