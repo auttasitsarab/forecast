@@ -1,0 +1,80 @@
+<html>
+<head>
+  <title>My Webpage</title>
+  <style>
+    .slideshow {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 500px;
+    }
+
+    .slideshow img {
+      width: 556px;
+      height: 500px;
+      object-fit: cover;
+    }
+
+    .nav-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      border: none;
+      font-size: 2em;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.3s;
+    }
+
+    .nav-button:hover {
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    #previousBtn {
+      left: 10px;
+    }
+
+    #nextBtn {
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slideshow">
+    <button id="previousBtn" class="nav-button">&#9664;</button> <!-- Left Arrow -->
+    <img id="image" src="outputImg/2025061304000.jpg">
+    <button id="nextBtn" class="nav-button">&#9654;</button> <!-- Right Arrow -->
+  </div>
+
+  <script>
+    const images = [
+      'outputImg/2025061304000.jpg',
+      'outputImg/2025061304001.jpg',
+      'outputImg/2025061304002.jpg',
+      'outputImg/2025061304003.jpg',
+      'outputImg/2025061304004.jpg'
+    ];
+
+    let currentIndex = 0;
+    const previousBtn = document.getElementById('previousBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const image = document.getElementById('image');
+
+    previousBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      image.src = images[currentIndex];
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      image.src = images[currentIndex];
+    });
+  </script>
+
+</body>
+</html>
