@@ -20,9 +20,10 @@
       display: inline-block;
     }
     .zoom-wrapper img {
+      display: block;
       width: 800px;
       height: 600px;
-      display: block;
+      transition: width 0.2s, height 0.2s;
     }
     .nav-button {
       position: fixed;
@@ -58,21 +59,27 @@
     let scale = 1;
 
     const image = document.getElementById('image');
-    const zoomWrapper = document.getElementById('zoomWrapper');
+
+    // เปลี่ยนภาพ โดยยังรักษาขนาดตาม scale ปัจจุบัน
+    function updateImage() {
+      image.src = images[currentIndex];
+      image.onload = () => {
+        image.style.width = `${800 * scale}px`;
+        image.style.height = `${600 * scale}px`;
+      };
+    }
 
     document.getElementById('previousBtn').addEventListener('click', () => {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
-      image.src = images[currentIndex];
-      resetZoom();
+      updateImage();
     });
 
     document.getElementById('nextBtn').addEventListener('click', () => {
       currentIndex = (currentIndex + 1) % images.length;
-      image.src = images[currentIndex];
-      resetZoom();
+      updateImage();
     });
 
-    // ฟังก์ชัน pinch zoom แบบขยายขนาดจริง
+    // Zoom ด้วย pinch
     let startDistance = 0;
 
     const getDistance = (touches) => {
@@ -94,9 +101,11 @@
         const factor = newDistance / startDistance;
         const newScale = scale * factor;
 
-        // ขยายภาพจริง
-        image.style.width = `${800 * newScale}px`;
-        image.style.height = `${600 * newScale}px`;
+        // จำกัดการซูมระหว่าง 1x - 5x
+        const clampedScale = Math.min(Math.max(newScale, 1), 5);
+
+        image.style.width = `${800 * clampedScale}px`;
+        image.style.height = `${600 * clampedScale}px`;
       }
     });
 
@@ -106,11 +115,11 @@
       }
     });
 
-    function resetZoom() {
-      scale = 1;
-      image.style.width = '800px';
-      image.style.height = '600px';
-    }
+    // กำหนด scale เริ่มต้น
+    image.onload = () => {
+      image.style.width = `${800 * scale}px`;
+      image.style.height = `${600 * scale}px`;
+    };
   </script>
 </body>
 </html>
