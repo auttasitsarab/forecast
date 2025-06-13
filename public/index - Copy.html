@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Viewer with CSS Effects</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .container {
+      position: relative;
+      overflow: hidden;
+      width: 90%;
+      max-width: 600px;
+    }
+    .image-wrapper {
+      position: relative;
+      transition: transform 0.3s ease-in-out;
+    }
+    img {
+      width: 100%;
+      transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+    }
+    .watermark {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      transition: color 0.3s ease-in-out;
+    }
+    .prev, .next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      z-index: 1;
+      opacity: 0.7;
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+    .prev {
+      left: 10px;
+    }
+    .next {
+      right: 10px;
+    }
+    .container:hover .prev, .container:hover .next {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.2);
+    }
+    .zoom-in {
+      transform: scale(1.5);
+    }
+    .zoom-out {
+      transform: scale(1);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="image-wrapper">
+    <img id="image" src="outputImg/2025061308300.jpg" alt="image1" />
+    <div class="watermark" id="watermark">image1</div>
+  </div>
+  <button class="prev" onclick="changeImage(-1)">&#10094;</button>
+  <button class="next" onclick="changeImage(1)">&#10095;</button>
+</div>
+
+<script>
+  const images = [
+    { src: "outputImg/2025061308300.jpg" },
+    { src: "outputImg/2025061308300.jpg" },
+    { src: "outputImg/2025061308300.jpg" }
+  ];
+  let currentIndex = 0;
+  let scale = 1;
+  const imageElement = document.getElementById('image');
+  const watermark = document.getElementById('watermark');
+  
+  imageElement.addEventListener('click', () => {
+    scale = (scale === 1) ? 1.5 : 1;
+    imageElement.style.transform = `scale(${scale})`;
+    imageElement.classList.toggle('zoom-in', scale > 1);
+    imageElement.classList.toggle('zoom-out', scale <= 1);
+    watermark.style.color = scale > 1 ? 'black' : 'white';
+  });
+
+  function changeImage(direction) {
+    currentIndex = (currentIndex + direction + images.length) % images.length;
+    const image = images[currentIndex];
+    imageElement.src = image.src;
+    const imageName = image.src.split('/').pop().replace(/\.[^/.]+$/, "");
+    watermark.textContent = imageName;
+    imageElement.style.transform = `scale(${scale})`;
+  }
+</script>
+
+</body>
+</html>

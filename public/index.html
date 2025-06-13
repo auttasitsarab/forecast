@@ -1,130 +1,40 @@
-<!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Viewer</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f0f0f0;
-    }
-    .container {
-      position: relative;
-      overflow: hidden;
-    }
-    .image-wrapper {
-      position: relative;
-      transition: transform 0.3s ease-in-out;
-    }
-    img {
-      max-width: 100%;
-      transition: transform 0.3s ease-in-out;
-    }
-    .watermark {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      pointer-events: none;
-      transition: color 0.3s ease-in-out;
-    }
-    .prev, .next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 24px;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-      z-index: 1;
-      opacity: 0.7;
-      transition: opacity 0.3s ease-in-out;
-    }
-    .prev {
-      left: 10px;
-    }
-    .next {
-      right: 10px;
-    }
-  </style>
+<title>My Webpage</title>
+<style>
+.slideshow {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 500px;
+}
+.slideshow img {
+width: 556px;
+height: 500px;
+}
+</style>
 </head>
 <body>
-
-<div class="container">
-  <div class="image-wrapper">
-    <img id="image" src="outputImg/2025061308000.jpg" alt="image1" />
-    <div class="watermark" id="watermark">image1</div>
-  </div>
-  <button class="prev" onclick="changeImage(-1)">&#10094;</button>
-  <button class="next" onclick="changeImage(1)">&#10095;</button>
+<div class="slideshow">
+<button id="previousBtn">Previous</button>
+<img id='image' src="outputImg\2025061308300.jpg" >
+<button id="nextBtn">Next</button>
 </div>
-
 <script>
-  const images = [
-    { src: "outputImg/2025061308000.jpg" },
-    { src: "outputImg/2025061308001.jpg" },
-    { src: "outputImg/2025061308002.jpg" }
-  ];
-  let currentIndex = 0;
-  let scale = 1;
-  const imageElement = document.getElementById('image');
-  const watermark = document.getElementById('watermark');
-  const prevButton = document.querySelector('.prev');
-  const nextButton = document.querySelector('.next');
-  
-  // Handle image zoom in and out
-  imageElement.addEventListener('click', () => {
-    scale = (scale === 1) ? 1.5 : 1; // Toggle zoom scale
-    imageElement.style.transform = `scale(${scale})`;
-    
-    // Update styles for zoom
-    updateZoomStyles(scale);
-  });
-
-  // Update button and watermark styles based on zoom scale
-  function updateZoomStyles(scale) {
-    if (scale > 1) {
-      // When zoomed in
-      prevButton.style.opacity = '1';
-      nextButton.style.opacity = '1';
-      watermark.style.color = 'black';  // Change watermark text to black
-    } else {
-      // When zoomed out
-      prevButton.style.opacity = '0.7';
-      nextButton.style.opacity = '0.7';
-      watermark.style.color = 'white';  // Revert watermark text to white
-    }
-  }
-
-  // Change image function with memory of zoom position
-  function changeImage(direction) {
-    currentIndex = (currentIndex + direction + images.length) % images.length;
-    const image = images[currentIndex];
-    imageElement.src = image.src;
-
-    // Extract image name without extension
-    const imageName = image.src.split('/').pop().replace(/\.[^/.]+$/, "");
-    watermark.textContent = imageName;
-
-    // Preserve zoom state
-    imageElement.style.transform = `scale(${scale})`;
-
-    // Update styles based on zoom state
-    updateZoomStyles(scale);
-  }
+const images = ['outputImg/2025061308300.jpg','outputImg/2025061308301.jpg', 'outputImg/2025061308302.jpg','outputImg/2025061308303.jpg', 'outputImg/2025061308304.jpg'];
+let currentIndex = 0;
+const previousBtn = document.getElementById('previousBtn');
+const nextBtn = document.getElementById('nextBtn');
+const image = document.getElementById('image');
+previousBtn.addEventListener('click', () => {
+currentIndex = (currentIndex - 1 + images.length) % images.length;
+image.src = images[currentIndex];
+});
+nextBtn.addEventListener('click', () => {
+currentIndex = (currentIndex + 1) % images.length;
+image.src = images[currentIndex];
+});
+document.getElementById("demo").innerHTML = 5 + 6;
 </script>
-
 </body>
 </html>
