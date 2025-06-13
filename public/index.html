@@ -94,22 +94,28 @@
 
 <script>
   const images = [
-    'outputImg/2025061307300.jpg',
     'outputImg/2025061307301.jpg',
     'outputImg/2025061307302.jpg',
+    'outputImg/2025061307303.jpg',
   ];
 
   let currentIndex = 0;
+  let scale = 1;
+  let translateX = 0, translateY = 0;
+  let lastScale = 1;
+  let startX = 0, startY = 0;
+
   const imgElement = document.getElementById('mainImage');
   const watermark = document.getElementById('watermark');
   const imageWrapper = document.getElementById('imageWrapper');
+  const viewer = document.getElementById('viewer');
 
   function updateImage() {
     const imagePath = images[currentIndex];
     imgElement.src = imagePath;
     const fileName = imagePath.split('/').pop().split('.').slice(0, -1).join('.');
     watermark.textContent = fileName;
-    resetZoom();
+    applyTransform();
   }
 
   function showPrev() {
@@ -123,13 +129,6 @@
   }
 
   // Zoom & Pan (touch and pinch)
-  let scale = 1;
-  let lastScale = 1;
-  let startX = 0, startY = 0;
-  let translateX = 0, translateY = 0;
-
-  const viewer = document.getElementById('viewer');
-
   viewer.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
       lastScale = scale;
