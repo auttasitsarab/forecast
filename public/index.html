@@ -1,161 +1,40 @@
-<!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zoomable Slideshow with Centered Watermark</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #000;
-      font-family: sans-serif;
-    }
-
-    .slideshow-container {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .zoom-wrapper {
-      position: relative;
-      display: inline-block;
-      overflow: hidden;
-    }
-
-    #image {
-      display: block;
-      width: 800px;
-      height: 600px;
-      transition: width 0.2s, height 0.2s;
-    }
-
-    .caption-watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: rgba(0, 0, 0, 0.8); /* สีดำเข้ม */
-      font-size: 32px;
-      font-weight: bold;
-      pointer-events: none;
-      z-index: 5;
-      opacity: 0.8;
-      text-shadow: 1px 1px 3px #fff;
-    }
-
-    .nav-button {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 10;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    #previousBtn {
-      left: 10px;
-    }
-
-    #nextBtn {
-      right: 10px;
-    }
-  </style>
+<title>My Webpage</title>
+<style>
+.slideshow {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 500px;
+}
+.slideshow img {
+width: 556px;
+height: 500px;
+}
+</style>
 </head>
 <body>
-  <div class="slideshow-container" id="slideshowContainer">
-    <button class="nav-button" id="previousBtn">Previous</button>
-
-    <div class="zoom-wrapper" id="zoomWrapper">
-      <img id="image" src="outputImg/2025061305000.jpg" />
-      <div id="caption" class="caption-watermark">2025061305000.jpg</div>
-    </div>
-
-    <button class="nav-button" id="nextBtn">Next</button>
-  </div>
-
-  <script>
-    const images = ['outputImg/2025061305000.jpg', 'outputImg/2025061305001.jpg', 'outputImg/2025061305002.jpg', 'outputImg/2025061305003.jpg', 'outputImg/2025061305004.jpg'];
-    let currentIndex = 0;
-    let scale = 1;
-
-    const image = document.getElementById('image');
-    const caption = document.getElementById('caption');
-
-    function getFilename(path) {
-      return path.split('/').pop();
-    }
-
-    function updateImage() {
-      const filename = getFilename(images[currentIndex]);
-      image.src = images[currentIndex];
-      caption.textContent = filename;
-
-      image.onload = () => {
-        const newWidth = 800 * scale;
-        const newHeight = 600 * scale;
-        image.style.width = `${newWidth}px`;
-        image.style.height = `${newHeight}px`;
-
-        caption.style.fontSize = `${32 * scale}px`;
-      };
-    }
-
-    document.getElementById('previousBtn').addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      updateImage();
-    });
-
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % images.length;
-      updateImage();
-    });
-
-    // Zoom
-    let startDistance = 0;
-
-    const getDistance = (touches) => {
-      const dx = touches[0].clientX - touches[1].clientX;
-      const dy = touches[0].clientY - touches[1].clientY;
-      return Math.sqrt(dx * dx + dy * dy);
-    };
-
-    image.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 2) {
-        startDistance = getDistance(e.touches);
-      }
-    });
-
-    image.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const newDistance = getDistance(e.touches);
-        const factor = newDistance / startDistance;
-        const newScale = scale * factor;
-        const clampedScale = Math.min(Math.max(newScale, 1), 5);
-
-        scale = clampedScale;
-        image.style.width = `${800 * scale}px`;
-        image.style.height = `${600 * scale}px`;
-        caption.style.fontSize = `${32 * scale}px`;
-      }
-    });
-
-    image.addEventListener('touchend', (e) => {
-      if (e.touches.length < 2) {
-        scale = parseFloat(image.style.width) / 800 || 1;
-      }
-    });
-
-    updateImage(); // เริ่มต้น
-  </script>
+<div class="slideshow">
+<button id="previousBtn">Previous</button>
+<img id='image' src="outputImg\2025061305300.jpg" >
+<button id="nextBtn">Next</button>
+</div>
+<script>
+const images = ['outputImg/2025061305300.jpg','outputImg/2025061305301.jpg', 'outputImg/2025061305302.jpg','outputImg/2025061305303.jpg', 'outputImg/2025061305304.jpg'];
+let currentIndex = 0;
+const previousBtn = document.getElementById('previousBtn');
+const nextBtn = document.getElementById('nextBtn');
+const image = document.getElementById('image');
+previousBtn.addEventListener('click', () => {
+currentIndex = (currentIndex - 1 + images.length) % images.length;
+image.src = images[currentIndex];
+});
+nextBtn.addEventListener('click', () => {
+currentIndex = (currentIndex + 1) % images.length;
+image.src = images[currentIndex];
+});
+document.getElementById("demo").innerHTML = 5 + 6;
+</script>
 </body>
 </html>
